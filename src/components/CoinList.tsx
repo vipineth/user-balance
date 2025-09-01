@@ -17,7 +17,9 @@ export default function CoinList() {
     if (!tokensInfo) {
       return { highValueTokens: null, lowValueTokens: null, combinedLowValueTokensValue: null }
     }
-    const highValueTokens = tokensInfo?.filter((token) => token.tokenBalanceUsdValue >= MIN_BALANCE_THRESHOLD_USD)
+    const highValueTokens = tokensInfo
+      ?.filter((token) => token.tokenBalanceUsdValue >= MIN_BALANCE_THRESHOLD_USD)
+      .sort((a, b) => b.tokenBalanceUsdValue - a.tokenBalanceUsdValue)
     const smallAmountTokens = tokensInfo?.filter((token) => token.tokenBalanceUsdValue < MIN_BALANCE_THRESHOLD_USD)
     const combinedSmallTokensValue = smallAmountTokens?.reduce((acc, token) => acc + token.tokenBalanceUsdValue, 0)
     return {
