@@ -19,6 +19,8 @@ export default function ConnectWallet() {
   function handleButtonClick() {
     if (isConnected) {
       disconnect()
+      // running into this issue https://github.com/wevm/wagmi/discussions/2801
+      window.location.reload()
     } else {
       connect({ connector: connectors[0] })
     }
