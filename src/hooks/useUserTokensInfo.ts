@@ -61,13 +61,13 @@ export default function useUserTokensInfo() {
         tokenBalanceUsdValue,
       }
     })
-  }, [userBalances, coingeckoData, isSuccess])
+  }, [userBalances, coingeckoData])
 
   const ethTokenInfo = useMemo(() => {
     if (!ethBalance || !coingeckoData) {
       return null
     }
-    const coingeckoEthData = coingeckoData[ETH_TOKEN?.priceFallBackTokenAddress!]
+    const coingeckoEthData = coingeckoData[ETH_TOKEN.priceFallBackTokenAddress!]
     const ethBalanceAmount = formatUnits(ethBalance.value, ETH_TOKEN.decimals)
     return {
       ...ETH_TOKEN,
@@ -76,7 +76,7 @@ export default function useUserTokensInfo() {
       tokenBalanceAmount: ethBalanceAmount,
       tokenBalanceUsdValue: Number(ethBalanceAmount) * coingeckoEthData.usd,
     }
-  }, [ethBalance])
+  }, [ethBalance, coingeckoData])
 
   const finalTokensInfo = useMemo(() => {
     if (!ethTokenInfo || !tokensInfo) {

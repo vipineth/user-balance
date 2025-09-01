@@ -1,6 +1,5 @@
 import CoinList from '@/src/components/CoinList'
 import ConnectWallet from '@/src/components/ConnectWallet'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 export default function Home() {
   return (

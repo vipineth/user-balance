@@ -1,13 +1,13 @@
 'use client'
 
-import { useAccount, useChainId, useConnect, useDisconnect } from 'wagmi'
+import { useAccount, useConnect, useDisconnect } from 'wagmi'
 import { shortenAddress } from '../lib/address'
 import { Button } from './Button'
 
 export default function ConnectWallet() {
   const { connect, connectors, error: connectError, isPending } = useConnect()
   const { isConnected, address } = useAccount()
-  const { disconnect, reset } = useDisconnect()
+  const { disconnect } = useDisconnect()
 
   const getButtonText = () => {
     if (isConnected) {

@@ -1,21 +1,17 @@
 'use client'
 
-import { useAccount, useBalance, useConnect } from 'wagmi'
-import useUserTokensInfo, { ITokenInfo } from '../hooks/useUserTokensInfo'
+import { useAccount } from 'wagmi'
+import useUserTokensInfo from '../hooks/useUserTokensInfo'
 import { useMemo } from 'react'
 import CoinInfo from './CoinInfo'
-import Coin from './Coin'
 import { formatUSD } from '../lib/format'
+import CoinIcon from './CoinIcon'
 
 const MIN_BALANCE_THRESHOLD_USD = 0.1
 
 export default function CoinList() {
-  const { address } = useAccount()
   const { isConnected } = useAccount()
   const { tokensInfo, isFetching, isSuccess, error: errorMessage } = useUserTokensInfo()
-  const balance = useBalance({
-    address: address,
-  })
 
   const { highValueTokens, lowValueTokens, combinedLowValueTokensValue } = useMemo(() => {
     if (!tokensInfo) {
@@ -78,7 +74,7 @@ export default function CoinList() {
             <tr className="bg-blue-50 shadow-sm border border-gray-100">
               <td className="py-4 px-4 rounded-l-md">
                 <div className="flex items-center gap-3">
-                  <Coin />
+                  <CoinIcon />
                   <div>
                     <p className="font-medium text-gray-900">{lowValueTokens.length} low value tokens</p>
                   </div>
@@ -86,7 +82,7 @@ export default function CoinList() {
               </td>
               <td className="py-4 px-4 rounded-l-md"></td>
               <td className="py-4 px-4 rounded-l-md text-right">
-                <p className="text-sm text-gray-500 text-right font-semibold text-gray-900">
+                <p className="text-sm text-right font-semibold text-gray-900">
                   {formatUSD(combinedLowValueTokensValue)}
                 </p>
               </td>
