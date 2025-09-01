@@ -1,9 +1,21 @@
+import { zeroAddress } from 'viem'
+
 interface IToken {
   address: string
   image: string
   name: string
   symbol: string
   decimals: number
+  priceFallBackTokenAddress?: string
+}
+
+export const ETH_TOKEN: IToken = {
+  address: zeroAddress.toLowerCase(),
+  image: 'https://assets.coingecko.com/coins/images/279/small/ethereum.png',
+  name: 'Ethereum',
+  symbol: 'ETH',
+  decimals: 18,
+  priceFallBackTokenAddress: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'.toLowerCase(),
 }
 
 export const tokens: IToken[] = [
@@ -66,6 +78,9 @@ export const tokens: IToken[] = [
 ]
 
 export function getToken(address: string): IToken | undefined {
+  if (address === ETH_TOKEN.address) {
+    return ETH_TOKEN
+  }
   return tokens.find((token) => token.address === address)
 }
 

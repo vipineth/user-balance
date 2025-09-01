@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { formatUnits } from 'viem'
 import useUserBalances from './useUserBalances'
-import { getToken } from '../config/tokens'
+import { ETH_TOKEN, getToken } from '../config/tokens'
 import { getAllTokensAddresses } from '../config/tokens'
 import useCoingeckoData from './useCoingeckoData'
 
@@ -26,6 +26,7 @@ export default function useUserTokensInfo() {
     isLoading: isLoadingBalances,
     isSuccess: isSuccessBalances,
     error: errorBalances,
+    ethBalance,
   } = useUserBalances()
   const {
     data: coingeckoData,
@@ -62,8 +63,30 @@ export default function useUserTokensInfo() {
     })
   }, [userBalances, coingeckoData, isSuccess])
 
+  const ethTokenInfo = useMemo(() => {
+    if (!ethBalance || !coingeckoData) {
+      return null
+    }
+    const coingeckoEthData = coingeckoData[ETH_TOKEN?.priceFallBackTokenAddress!]
+    const ethBalanceAmount = formatUnits(ethBalance.value, ETH_TOKEN.decimals)
+    return {
+      ...ETH_TOKEN,
+      ...coingeckoEthData,
+      balance: Number(ethBalance.value),
+      tokenBalanceAmount: ethBalanceAmount,
+      tokenBalanceUsdValue: Number(ethBalanceAmount) * coingeckoEthData.usd,
+    }
+  }, [ethBalance])
+
+  const finalTokensInfo = useMemo(() => {
+    if (!ethTokenInfo || !tokensInfo) {
+      return null
+    }
+    return [ethTokenInfo, ...tokensInfo].filter((token) => token !== null) as ITokenInfo[]
+  }, [ethTokenInfo, tokensInfo])
+
   return {
-    tokensInfo,
+    tokensInfo: finalTokensInfo,
     isFetching: isLoading,
     isSuccess,
     isLoading,

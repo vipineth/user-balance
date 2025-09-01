@@ -5,10 +5,9 @@ import { shortenAddress } from '../lib/address'
 import { Button } from './Button'
 
 export default function ConnectWallet() {
-  const { connect, connectors, error: connectError, isPending, reset } = useConnect()
+  const { connect, connectors, error: connectError, isPending } = useConnect()
   const { isConnected, address } = useAccount()
-  const { disconnect } = useDisconnect()
-  const chainId = useChainId()
+  const { disconnect, reset } = useDisconnect()
 
   const getButtonText = () => {
     if (isConnected) {
@@ -21,7 +20,7 @@ export default function ConnectWallet() {
     if (isConnected) {
       disconnect()
     } else {
-      connect({ connector: connectors[0], chainId })
+      connect({ connector: connectors[0] })
     }
   }
 

@@ -1,12 +1,35 @@
 'use client'
 
-import { useAccount, useConnect } from 'wagmi'
-import useUserTokensInfo from '../hooks/useUserTokensInfo'
+import { useAccount, useBalance, useConnect } from 'wagmi'
+import useUserTokensInfo, { ITokenInfo } from '../hooks/useUserTokensInfo'
+import { useMemo } from 'react'
 import CoinInfo from './CoinInfo'
+import Coin from './Coin'
+import { formatUSD } from '../lib/format'
+
+const MIN_BALANCE_THRESHOLD_USD = 0.1
 
 export default function CoinList() {
+  const { address } = useAccount()
   const { isConnected } = useAccount()
   const { tokensInfo, isFetching, isSuccess, error: errorMessage } = useUserTokensInfo()
+  const balance = useBalance({
+    address: address,
+  })
+
+  const { highValueTokens, lowValueTokens, combinedLowValueTokensValue } = useMemo(() => {
+    if (!tokensInfo) {
+      return { highValueTokens: null, lowValueTokens: null, combinedLowValueTokensValue: null }
+    }
+    const highValueTokens = tokensInfo?.filter((token) => token.tokenBalanceUsdValue >= MIN_BALANCE_THRESHOLD_USD)
+    const smallAmountTokens = tokensInfo?.filter((token) => token.tokenBalanceUsdValue < MIN_BALANCE_THRESHOLD_USD)
+    const combinedSmallTokensValue = smallAmountTokens?.reduce((acc, token) => acc + token.tokenBalanceUsdValue, 0)
+    return {
+      highValueTokens,
+      lowValueTokens: smallAmountTokens,
+      combinedLowValueTokensValue: combinedSmallTokensValue,
+    } as const
+  }, [tokensInfo])
 
   if (!isConnected) {
     return <div className="text-center text-gray-500">Connect your wallet to view your tokens</div>
@@ -14,7 +37,7 @@ export default function CoinList() {
 
   return (
     <div className="w-full overflow-x-auto">
-      <table className="w-full border-separate border-spacing-y-2 min-h-96">
+      <table className="w-full border-separate border-spacing-y-2">
         <thead>
           <tr>
             <th className="text-left py-3 px-4 font-medium text-gray-700">Asset/Amount</th>
@@ -39,13 +62,6 @@ export default function CoinList() {
             </tr>
           )}
 
-          {!isFetching && isSuccess && !tokensInfo && (
-            <tr>
-              <td colSpan={3} className="py-8 text-center text-gray-500">
-                No tokens found
-              </td>
-            </tr>
-          )}
           {!isFetching && errorMessage && (
             <tr>
               <td colSpan={3} className="py-8 text-center text-gray-500">
@@ -54,12 +70,27 @@ export default function CoinList() {
             </tr>
           )}
 
-          {!isFetching && isSuccess && tokensInfo && (
-            <>
-              {tokensInfo.map((coin) => (
-                <CoinInfo key={coin.address} coin={coin} />
-              ))}
-            </>
+          {highValueTokens?.map((token) => (
+            <CoinInfo key={token.address} coin={token} />
+          ))}
+
+          {lowValueTokens && lowValueTokens.length > 0 && (
+            <tr className="bg-blue-50 shadow-sm border border-gray-100">
+              <td className="py-4 px-4 rounded-l-md">
+                <div className="flex items-center gap-3">
+                  <Coin />
+                  <div>
+                    <p className="font-medium text-gray-900">{lowValueTokens.length} low value tokens</p>
+                  </div>
+                </div>
+              </td>
+              <td className="py-4 px-4 rounded-l-md"></td>
+              <td className="py-4 px-4 rounded-l-md text-right">
+                <p className="text-sm text-gray-500 text-right font-semibold text-gray-900">
+                  {formatUSD(combinedLowValueTokensValue)}
+                </p>
+              </td>
+            </tr>
           )}
         </tbody>
       </table>
