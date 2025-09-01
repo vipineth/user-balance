@@ -13,7 +13,7 @@ export default function CoinInfo({ coin }: IProps) {
     <tr className="bg-blue-50 shadow-sm border border-gray-100">
       <td className="py-4 px-4 rounded-l-md">
         <div className="flex items-center gap-3">
-          <Image className="size-8 rounded-full" src={coin.image} alt={coin.symbol} />
+          <img className="size-8 rounded-full" src={coin.image} alt={coin.symbol} />
           <div>
             <p className="font-medium text-gray-900">
               {formatAmount(coin.tokenBalanceAmount, 4)} {coin.symbol}
